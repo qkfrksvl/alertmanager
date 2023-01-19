@@ -201,7 +201,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		}
 		u = strings.TrimSpace(string(content))
 	}
-
+	fmt.Println("test")
 	resp, err := notify.PostJSON(ctx, n.client, u, &buf)
 	if err != nil {
 		return true, notify.RedactURL(err)
