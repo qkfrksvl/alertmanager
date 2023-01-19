@@ -201,7 +201,19 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		}
 		u = strings.TrimSpace(string(content))
 	}
-	fmt.Println("test")
+	fmt.Println("-----ctx-----")
+	fmt.Println(ctx)
+	fmt.Println("-------------")
+
+	fmt.Println("-----notifier struct-----")
+	fmt.Println(n)
+	fmt.Println(n.conf)
+	fmt.Println(n.tmpl)
+	fmt.Println(n.logger)
+	fmt.Println(n.retrier)
+	fmt.Println(n.retrier)
+	fmt.Println("-------------")
+
 	resp, err := notify.PostJSON(ctx, n.client, u, &buf)
 	if err != nil {
 		return true, notify.RedactURL(err)
