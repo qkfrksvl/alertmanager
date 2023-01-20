@@ -101,8 +101,6 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	fmt.Println("-----\n", data.CommonAnnotations)
 	fmt.Println("-----\n", data.CommonLabels)
 
-	fmt.Println("-----tmplText end-----")
-
 	var markdownIn []string
 
 	if len(n.conf.MrkdwnIn) == 0 {
@@ -222,7 +220,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	fmt.Println(n.client)
 	fmt.Println(n.retrier)
 	fmt.Println("-------------")
-
+	fmt.Println(buf)
 	resp, err := notify.PostJSON(ctx, n.client, u, &buf)
 	if err != nil {
 		return true, notify.RedactURL(err)
