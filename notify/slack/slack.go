@@ -95,6 +95,8 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		data     = notify.GetTemplateData(ctx, n.tmpl, as, n.logger)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
+	fmt.Println(data)
+	fmt.Println(tmplText)
 	var markdownIn []string
 
 	if len(n.conf.MrkdwnIn) == 0 {
@@ -210,7 +212,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	fmt.Println(n.conf)
 	fmt.Println(n.tmpl)
 	fmt.Println(n.logger)
-	fmt.Println(n.retrier)
+	fmt.Println(n.client)
 	fmt.Println(n.retrier)
 	fmt.Println("-------------")
 
