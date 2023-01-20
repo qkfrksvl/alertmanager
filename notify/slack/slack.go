@@ -95,12 +95,12 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		data     = notify.GetTemplateData(ctx, n.tmpl, as, n.logger)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
-	fmt.Println("-----data start-----")
-	fmt.Println(data)
-	fmt.Println("-----data end-----")
+	fmt.Println("-----\n", data.Alerts)
+	fmt.Println("-----\n", data.GroupLabels)
+	fmt.Println("-----\n", data.CommonLabels)
+	fmt.Println("-----\n", data.CommonAnnotations)
+	fmt.Println("-----\n", data.CommonLabels)
 
-	fmt.Println("-----tmplText start-----")
-	fmt.Println(tmplText)
 	fmt.Println("-----tmplText end-----")
 
 	var markdownIn []string
@@ -110,6 +110,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	} else {
 		markdownIn = n.conf.MrkdwnIn
 	}
+	fmt.Printf("-----\n%+v", n.conf)
 
 	title, truncated := notify.TruncateInRunes(tmplText(n.conf.Title), maxTitleLenRunes)
 	if truncated {
