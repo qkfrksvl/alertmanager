@@ -22,6 +22,8 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+
+	"github.com/pkg/profile"
 	"runtime"
 	"strings"
 	"sync"
@@ -189,7 +191,10 @@ func buildReceiverIntegrations(nc *config.Receiver, tmpl *template.Template, log
 }
 
 func main() {
+	defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+
 	os.Exit(run())
+
 }
 
 func run() int {
