@@ -101,7 +101,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		data     = notify.GetTemplateData(ctx, n.tmpl, as, n.logger)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
-
+	fmt.Println(tmplText("Alerts"))
 	asht := make(map[string]string)
 
 	for _, v := range as {
