@@ -98,13 +98,13 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		data     = notify.GetTemplateData(ctx, n.tmpl, as, n.logger)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
-	fmt.Println("-----\n", ctx)
+	fmt.Printf("-----\n%+v", ctx)
 
-	fmt.Println("-----\n", data.Alerts)
-	fmt.Println("-----\n", data.GroupLabels)
-	fmt.Println("-----\n", data.CommonLabels)
-	fmt.Println("-----\n", data.CommonAnnotations)
-	fmt.Println("-----\n", data.CommonLabels)
+	fmt.Printf("-----\n%+v", data.Alerts)
+	fmt.Printf("-----\n%+v", data.GroupLabels)
+	fmt.Printf("-----\n%+v", data.CommonLabels)
+	fmt.Printf("-----\n%+v", data.CommonAnnotations)
+	fmt.Printf("-----\n%+v", data.CommonLabels)
 
 	var markdownIn []string
 
