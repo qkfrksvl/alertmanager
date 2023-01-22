@@ -16,7 +16,6 @@ package slack
 import (
 	"bytes"
 	"context"
-	"crypto/sha1"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -95,18 +94,16 @@ type attachment struct {
 
 // Notify implements the Notifier interface.
 func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error) {
-	h := sha1.New()
 	var err error
 	var (
 		data     = notify.GetTemplateData(ctx, n.tmpl, as, n.logger)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
-	asht := make(map[string]string)
-	fmt.Println(data.Status)
-	for _, v := range as {
-		a := v.Alert.String() + v.Alert.StartsAt.String()
-		ash := fmt.Sprintf("%s", h.Sum([]byte(a)))
-		asht[ash] = "0"
+	afts := make(map[string]string)
+
+	for _, v := range data.Alerts {
+		fmt.Println(v.Fingerprint)
+		afts[v.Fingerprint] = "0"
 
 	}
 
