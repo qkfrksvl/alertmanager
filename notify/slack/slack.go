@@ -105,8 +105,11 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 
 	for _, v := range as {
 		as := v.Alert.String() + v.Alert.StartsAt.String()
-		ash := h.Sum([]byte(as))
-		asht[fmt.Sprintf("%s", ash)] = "0"
+		fmt.Println(as)
+		ash := fmt.Sprintf("%s", h.Sum([]byte(as)))
+		fmt.Println(ash)
+		asht[ash] = "0"
+
 	}
 
 	var markdownIn []string
