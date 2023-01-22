@@ -99,7 +99,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
 	for _, v := range as {
-		fmt.Printf("-----\n%+v", v)
+		fmt.Println("----------", v, "----------")
 
 	}
 
