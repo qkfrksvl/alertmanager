@@ -233,7 +233,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		if err := json.NewDecoder(resp.Body).Decode(&sr); err != nil {
 			return false, err
 		}
-
+		fmt.Printf("%+v", req)
 		fmt.Println(sr.OK)
 		fmt.Println(sr.Error)
 
