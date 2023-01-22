@@ -98,8 +98,8 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		data     = notify.GetTemplateData(ctx, n.tmpl, as, n.logger)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
-	fmt.Printf("-----\n%+v", n.tmpl)
-
+	fmt.Printf("-----\n%+v", n.tmpl.text)
+	fmt.Printf("-----\n%+v", n.tmpl.html)
 	var markdownIn []string
 
 	if len(n.conf.MrkdwnIn) == 0 {
