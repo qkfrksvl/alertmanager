@@ -101,7 +101,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
 
-	var asht map[string]string
+	asht := make(map[string]string)
 
 	for _, v := range as {
 		a := v.Alert.String() + v.Alert.StartsAt.String()
