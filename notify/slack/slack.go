@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -231,7 +232,10 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		if err := json.NewDecoder(resp.Body).Decode(&sr); err != nil {
 			return false, err
 		}
-
+		b, _ := io.ReadAll(resp.Body)
+		fmt.Println(string(b))
+		fmt.Println(resp.Body)
+		fmt.Println(sr)
 		afts[r] = sr.ts
 
 		fmt.Println(afts)
