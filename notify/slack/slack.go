@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -228,15 +227,14 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		}
 
 		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
-
 		var sr responseSlack
 
 		if err := json.NewDecoder(resp.Body).Decode(&sr); err != nil {
 			return false, err
 		}
+		fmt.Println(u)
 
-		b, _ := io.ReadAll(resp.Body)
-		fmt.Println(string(b))
+		fmt.Println(resp.Status)
 		afts[r] = sr.TS
 
 	}
