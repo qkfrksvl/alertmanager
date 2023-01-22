@@ -98,8 +98,8 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		data     = notify.GetTemplateData(ctx, n.tmpl, as, n.logger)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
-	fmt.Printf("-----\n%+v", n.tmpl.text)
-	fmt.Printf("-----\n%+v", n.tmpl.html)
+	fmt.Printf("-----\n%+v", as)
+
 	var markdownIn []string
 
 	if len(n.conf.MrkdwnIn) == 0 {
@@ -212,10 +212,13 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	}
 
 	var u string
+	var resp *http.Response
 
 	switch n.conf.ChatAPI {
 	case true:
 		u = SlackChatURL
+		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
+
 	case false:
 		if n.conf.APIURL != nil {
 			u = n.conf.APIURL.String()
@@ -225,9 +228,10 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 				return false, err
 			}
 			u = strings.TrimSpace(string(content))
+			resp, err = notify.PostJSON(ctx, n.client, u, &buf)
 		}
 	}
-	resp, err := notify.PostJSON(ctx, n.client, u, &buf)
+
 	if err != nil {
 		return true, notify.RedactURL(err)
 	}
