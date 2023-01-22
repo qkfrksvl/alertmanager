@@ -220,7 +220,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	if err := json.NewEncoder(&buf).Encode(req); err != nil {
 		return false, err
 	}
-
+	fmt.Println(buf.String())
 	var u string
 	var resp *http.Response
 
@@ -231,7 +231,6 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		fmt.Printf("%+v", resp.Body)
 		b, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(b))
-		fmt.Printf("%+v", buf.String())
 	case false:
 		if n.conf.APIURL != nil {
 			u = n.conf.APIURL.String()
