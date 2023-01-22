@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -45,6 +44,12 @@ type Notifier struct {
 	logger  log.Logger
 	client  *http.Client
 	retrier *notify.Retrier
+}
+
+type responseSlack struct {
+	ok      bool   `json:"ok"`
+	channel string `json:"channel"`
+	ts      string `json:"ts"`
 }
 
 // New returns a new Slack notification handler.
@@ -92,6 +97,8 @@ type attachment struct {
 	MrkdwnIn   []string             `json:"mrkdwn_in,omitempty"`
 }
 
+const slackapiupdate string = "https://slack.com/api/chat.update"
+
 // Notify implements the Notifier interface.
 func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error) {
 	var err error
@@ -99,13 +106,6 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		data     = notify.GetTemplateData(ctx, n.tmpl, as, n.logger)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
-	afts := make(map[string]string)
-
-	for _, v := range data.Alerts {
-		fmt.Println(v.Fingerprint)
-		afts[v.Fingerprint] = "0"
-
-	}
 
 	var markdownIn []string
 
@@ -220,9 +220,21 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 			u = strings.TrimSpace(string(content))
 		}
 		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
-		fmt.Printf("%+v", resp.Body)
-		b, _ := io.ReadAll(resp.Body)
-		fmt.Println(string(b))
+
+		afts := make(map[string]string)
+		var r string
+		var sr responseSlack
+		for _, v := range data.Alerts {
+			r = r + v.Fingerprint
+			afts[r] = "0"
+		}
+		if err := json.NewDecoder(resp.Body).Decode(sr); err != nil {
+			return false, err
+		}
+
+		afts[r] = sr.ts
+
+		fmt.Println(afts)
 	}
 
 	if err != nil {
