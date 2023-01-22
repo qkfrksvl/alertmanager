@@ -35,7 +35,6 @@ import (
 
 // https://api.slack.com/reference/messaging/attachments#legacy_fields - 1024, no units given, assuming runes or characters.
 const maxTitleLenRunes = 1024
-const SlackChatURL = "https://slack.com/api/chat.update"
 
 // Notifier implements a Notifier for Slack notifications.
 type Notifier struct {
@@ -210,7 +209,6 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	if err := json.NewEncoder(&buf).Encode(req); err != nil {
 		return false, err
 	}
-	fmt.Println(buf.String())
 	var u string
 	var resp *http.Response
 
