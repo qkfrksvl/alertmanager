@@ -105,9 +105,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 
 	for _, v := range as {
 		a := v.Alert.String() + v.Alert.StartsAt.String()
-		fmt.Println(a)
 		ash := fmt.Sprintf("%s", h.Sum([]byte(a)))
-		fmt.Println(ash)
 		asht[ash] = "0"
 
 	}
@@ -229,7 +227,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	case true:
 		u = SlackChatURL
 		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
-		fmt.Println(resp)
+		fmt.Printf("%+v", resp)
 	case false:
 		if n.conf.APIURL != nil {
 			u = n.conf.APIURL.String()
