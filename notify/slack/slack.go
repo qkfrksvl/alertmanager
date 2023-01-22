@@ -19,6 +19,7 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -227,7 +228,9 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	case true:
 		u = SlackChatURL
 		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
-		fmt.Printf("%+v", resp)
+		fmt.Printf("%+v", resp.Body)
+		b, _ := io.ReadAll(resp.Body)
+		fmt.Println(string(b))
 	case false:
 		if n.conf.APIURL != nil {
 			u = n.conf.APIURL.String()
