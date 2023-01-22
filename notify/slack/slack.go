@@ -49,6 +49,7 @@ type responseSlack struct {
 	OK      bool   `json:"ok"`
 	Channel string `json:"channel"`
 	TS      string `json:"ts"`
+	Error   string `json:"error"`
 }
 
 // New returns a new Slack notification handler.
@@ -232,9 +233,10 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		if err := json.NewDecoder(resp.Body).Decode(&sr); err != nil {
 			return false, err
 		}
-		fmt.Println(u)
 
-		fmt.Println(resp.Status)
+		fmt.Println(sr.OK)
+		fmt.Println(sr.Error)
+
 		afts[r] = sr.TS
 
 	}
