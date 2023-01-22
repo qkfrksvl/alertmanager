@@ -16,6 +16,7 @@ package slack
 import (
 	"bytes"
 	"context"
+	"crypto/sha1"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -93,22 +94,19 @@ type attachment struct {
 
 // Notify implements the Notifier interface.
 func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error) {
+	h := sha1.New()
 	var err error
 	var (
 		data     = notify.GetTemplateData(ctx, n.tmpl, as, n.logger)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
-	for _, v := range as {
-		fmt.Println("----------\n", v.Alert, "----------\n")
-		fmt.Println("----------\n", v.Timeout, "----------\n")
-		fmt.Println("----------\n", v.Labels, "----------\n")
-		fmt.Println("----------\n", v.StartsAt, "----------\n")
-		fmt.Println("----------\n", v.UpdatedAt, "----------\n")
-		fmt.Println("----------\n", v.EndsAt, "----------\n")
-		fmt.Println("----------\n", v.Alert.StartsAt, "----------\n")
-		fmt.Println("----------\n", v.Alert.EndsAt, "----------\n")
-		fmt.Println("----------\n", v.Alert.Resolved(), "----------\n")
 
+	var asht map[string]string
+
+	for _, v := range as {
+		as := v.Alert.String() + v.Alert.StartsAt.String()
+		ash := h.Sum([]byte(as))
+		asht[fmt.Sprintf("%s", ash)] = "0"
 	}
 
 	var markdownIn []string
@@ -229,7 +227,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	case true:
 		u = SlackChatURL
 		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
-
+		fmt.Println(resp)
 	case false:
 		if n.conf.APIURL != nil {
 			u = n.conf.APIURL.String()
