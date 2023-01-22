@@ -228,8 +228,8 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 				return false, err
 			}
 			u = strings.TrimSpace(string(content))
-			resp, err = notify.PostJSON(ctx, n.client, u, &buf)
 		}
+		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
 	}
 
 	if err != nil {
