@@ -104,9 +104,9 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	var asht map[string]string
 
 	for _, v := range as {
-		as := v.Alert.String() + v.Alert.StartsAt.String()
-		fmt.Println(as)
-		ash := fmt.Sprintf("%s", h.Sum([]byte(as)))
+		a := v.Alert.String() + v.Alert.StartsAt.String()
+		fmt.Println(a)
+		ash := fmt.Sprintf("%s", h.Sum([]byte(a)))
 		fmt.Println(ash)
 		asht[ash] = "0"
 
