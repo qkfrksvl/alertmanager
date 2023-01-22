@@ -47,9 +47,9 @@ type Notifier struct {
 }
 
 type responseSlack struct {
-	ok      bool   `json:"ok"`
-	channel string `json:"channel"`
-	ts      string `json:"ts"`
+	OK      bool   `json:"ok"`
+	Channel string `json:"channel"`
+	TS      string `json:"ts"`
 }
 
 // New returns a new Slack notification handler.
