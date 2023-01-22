@@ -35,6 +35,7 @@ import (
 
 // https://api.slack.com/reference/messaging/attachments#legacy_fields - 1024, no units given, assuming runes or characters.
 const maxTitleLenRunes = 1024
+const SlackChatURL = "https://slack.com/api/chat.postMessage"
 
 // Notifier implements a Notifier for Slack notifications.
 type Notifier struct {
@@ -69,6 +70,8 @@ type request struct {
 	IconURL     string       `json:"icon_url,omitempty"`
 	LinkNames   bool         `json:"link_names,omitempty"`
 	Attachments []attachment `json:"attachments"`
+	Token       string       `json:"token,omitempty"`
+	TS          string       `json:"ts,omitempty"`
 }
 
 // attachment is used to display a richly-formatted message block.
@@ -95,6 +98,8 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		data     = notify.GetTemplateData(ctx, n.tmpl, as, n.logger)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
+	fmt.Println("-----\n", ctx)
+
 	fmt.Println("-----\n", data.Alerts)
 	fmt.Println("-----\n", data.GroupLabels)
 	fmt.Println("-----\n", data.CommonLabels)
@@ -181,13 +186,27 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		att.Actions = actions
 	}
 
-	req := &request{
-		Channel:     tmplText(n.conf.Channel),
-		Username:    tmplText(n.conf.Username),
-		IconEmoji:   tmplText(n.conf.IconEmoji),
-		IconURL:     tmplText(n.conf.IconURL),
-		LinkNames:   n.conf.LinkNames,
-		Attachments: []attachment{*att},
+	var req *request
+	if n.conf.ChatAPI {
+		req = &request{
+			Channel:     tmplText(n.conf.Channel),
+			Username:    tmplText(n.conf.Username),
+			IconEmoji:   tmplText(n.conf.IconEmoji),
+			IconURL:     tmplText(n.conf.IconURL),
+			Token:       tmplText(n.conf.Token),
+			TS:          tmplText(n.conf.TS),
+			LinkNames:   n.conf.LinkNames,
+			Attachments: []attachment{*att},
+		}
+	} else {
+		req = &request{
+			Channel:     tmplText(n.conf.Channel),
+			Username:    tmplText(n.conf.Username),
+			IconEmoji:   tmplText(n.conf.IconEmoji),
+			IconURL:     tmplText(n.conf.IconURL),
+			LinkNames:   n.conf.LinkNames,
+			Attachments: []attachment{*att},
+		}
 	}
 	if err != nil {
 		return false, err
@@ -199,28 +218,21 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	}
 
 	var u string
-	if n.conf.APIURL != nil {
-		u = n.conf.APIURL.String()
-	} else {
-		content, err := os.ReadFile(n.conf.APIURLFile)
-		if err != nil {
-			return false, err
-		}
-		u = strings.TrimSpace(string(content))
-	}
-	fmt.Println("-----ctx-----")
-	fmt.Println(ctx)
-	fmt.Println("-------------")
 
-	fmt.Println("-----notifier struct-----")
-	fmt.Println(n)
-	fmt.Println(n.conf)
-	fmt.Println(n.tmpl)
-	fmt.Println(n.logger)
-	fmt.Println(n.client)
-	fmt.Println(n.retrier)
-	fmt.Println("-------------")
-	fmt.Println(buf)
+	switch n.conf.ChatAPI {
+	case true:
+		u = SlackChatURL
+	case false:
+		if n.conf.APIURL != nil {
+			u = n.conf.APIURL.String()
+		} else {
+			content, err := os.ReadFile(n.conf.APIURLFile)
+			if err != nil {
+				return false, err
+			}
+			u = strings.TrimSpace(string(content))
+		}
+	}
 	resp, err := notify.PostJSON(ctx, n.client, u, &buf)
 	if err != nil {
 		return true, notify.RedactURL(err)

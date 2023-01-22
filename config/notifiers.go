@@ -427,7 +427,9 @@ type SlackConfig struct {
 
 	APIURL     *SecretURL `yaml:"api_url,omitempty" json:"api_url,omitempty"`
 	APIURLFile string     `yaml:"api_url_file,omitempty" json:"api_url_file,omitempty"`
-
+	ChatAPI    bool       `yaml:"chat_api,omitempty" json:"chat_api,omitempty"`
+	Token      string     `yaml:"token,omitempty" json:"token,omitempty"`
+	TS         string     `yaml:"ts,omitempty" json:"ts,omitempty"`
 	// Slack channel override, (like #other-channel or @username).
 	Channel  string `yaml:"channel,omitempty" json:"channel,omitempty"`
 	Username string `yaml:"username,omitempty" json:"username,omitempty"`
