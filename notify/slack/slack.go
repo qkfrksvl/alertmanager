@@ -99,7 +99,9 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		tmplText = notify.TmplText(n.tmpl, data, &err)
 	)
 	for _, v := range as {
-		fmt.Println("----------", v, "----------")
+		fmt.Println("----------", v.Alert, "----------")
+		fmt.Println("----------", v.Labels, "----------")
+		fmt.Println("----------", v.StartsAt, "----------")
 
 	}
 
