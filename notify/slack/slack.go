@@ -123,6 +123,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		}
 		level.Warn(n.logger).Log("msg", "Truncated title", "key", key, "max_runes", maxTitleLenRunes)
 	}
+
 	att := &attachment{
 		Title:      title,
 		TitleLink:  tmplText(n.conf.TitleLink),
@@ -185,15 +186,20 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		}
 		att.Actions = actions
 	}
-
+	afts := make(map[string]string)
+	var r string
+	for _, v := range data.Alerts {
+		r = r + v.Fingerprint
+		afts[r] = "0"
+	}
 	req := &request{
 		Channel:     tmplText(n.conf.Channel),
 		Username:    tmplText(n.conf.Username),
 		IconEmoji:   tmplText(n.conf.IconEmoji),
 		IconURL:     tmplText(n.conf.IconURL),
-		TS:          tmplText(n.conf.TS),
 		LinkNames:   n.conf.LinkNames,
 		Attachments: []attachment{*att},
+		TS:          afts[r],
 	}
 
 	if err != nil {
@@ -210,7 +216,9 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 
 	switch n.conf.Update_resolved {
 	case true:
-		if n.conf.APIURL != nil {
+		if data.Status == "resolved" {
+			u = slackapiupdate
+		} else if n.conf.APIURL != nil {
 			u = n.conf.APIURL.String()
 		} else {
 			content, err := os.ReadFile(n.conf.APIURLFile)
@@ -219,23 +227,17 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 			}
 			u = strings.TrimSpace(string(content))
 		}
+
 		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
 
-		afts := make(map[string]string)
-		var r string
 		var sr responseSlack
-		for _, v := range data.Alerts {
-			r = r + v.Fingerprint
-			afts[r] = "0"
-		}
+
 		if err := json.NewDecoder(resp.Body).Decode(&sr); err != nil {
 			return false, err
 		}
 
-		fmt.Println(sr)
 		afts[r] = sr.TS
 
-		fmt.Println(afts)
 	}
 
 	if err != nil {
