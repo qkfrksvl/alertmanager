@@ -231,7 +231,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		fmt.Printf("%+v", resp.Body)
 		b, _ := io.ReadAll(resp.Body)
 		fmt.Println(string(b))
-		fmt.Printf("%+v", n.client)
+		fmt.Printf("%+v", req)
 	case false:
 		if n.conf.APIURL != nil {
 			u = n.conf.APIURL.String()
