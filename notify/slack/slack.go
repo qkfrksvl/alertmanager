@@ -37,7 +37,7 @@ import (
 
 // https://api.slack.com/reference/messaging/attachments#legacy_fields - 1024, no units given, assuming runes or characters.
 const maxTitleLenRunes = 1024
-const SlackChatURL = "https://slack.com/api/chat.postMessage"
+const SlackChatURL = "https://slack.com/api/chat.update"
 
 // Notifier implements a Notifier for Slack notifications.
 type Notifier struct {
@@ -190,28 +190,16 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		att.Actions = actions
 	}
 
-	var req *request
-	if n.conf.ChatAPI {
-		req = &request{
-			Channel:     tmplText(n.conf.Channel),
-			Username:    tmplText(n.conf.Username),
-			IconEmoji:   tmplText(n.conf.IconEmoji),
-			IconURL:     tmplText(n.conf.IconURL),
-			Token:       tmplText(n.conf.Token),
-			TS:          tmplText(n.conf.TS),
-			LinkNames:   n.conf.LinkNames,
-			Attachments: []attachment{*att},
-		}
-	} else {
-		req = &request{
-			Channel:     tmplText(n.conf.Channel),
-			Username:    tmplText(n.conf.Username),
-			IconEmoji:   tmplText(n.conf.IconEmoji),
-			IconURL:     tmplText(n.conf.IconURL),
-			LinkNames:   n.conf.LinkNames,
-			Attachments: []attachment{*att},
-		}
+	req := &request{
+		Channel:     tmplText(n.conf.Channel),
+		Username:    tmplText(n.conf.Username),
+		IconEmoji:   tmplText(n.conf.IconEmoji),
+		IconURL:     tmplText(n.conf.IconURL),
+		TS:          tmplText(n.conf.TS),
+		LinkNames:   n.conf.LinkNames,
+		Attachments: []attachment{*att},
 	}
+
 	if err != nil {
 		return false, err
 	}
@@ -224,14 +212,8 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 	var u string
 	var resp *http.Response
 
-	switch n.conf.ChatAPI {
+	switch n.conf.Update_resolved {
 	case true:
-		u = SlackChatURL
-		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
-		fmt.Printf("%+v", resp.Body)
-		b, _ := io.ReadAll(resp.Body)
-		fmt.Println(string(b))
-	case false:
 		if n.conf.APIURL != nil {
 			u = n.conf.APIURL.String()
 		} else {
@@ -242,6 +224,9 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 			u = strings.TrimSpace(string(content))
 		}
 		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
+		fmt.Printf("%+v", resp.Body)
+		b, _ := io.ReadAll(resp.Body)
+		fmt.Println(string(b))
 	}
 
 	if err != nil {
