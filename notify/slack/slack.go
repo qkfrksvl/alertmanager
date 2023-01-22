@@ -228,7 +228,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 			r = r + v.Fingerprint
 			afts[r] = "0"
 		}
-		if err := json.NewDecoder(resp.Body).Decode(sr); err != nil {
+		if err := json.NewDecoder(resp.Body).Decode(&sr); err != nil {
 			return false, err
 		}
 
