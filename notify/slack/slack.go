@@ -233,7 +233,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 		}
 
 		fmt.Println(sr)
-		afts[r] = sr.ts
+		afts[r] = sr.TS
 
 		fmt.Println(afts)
 	}
