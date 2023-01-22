@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -221,8 +220,7 @@ func (n *Notifier) Notify(ctx context.Context, as ...*types.Alert) (bool, error)
 			u = strings.TrimSpace(string(content))
 		}
 		resp, err = notify.PostJSON(ctx, n.client, u, &buf)
-		b, _ := io.ReadAll(resp.Body)
-		fmt.Println(string(b))
+
 		afts := make(map[string]string)
 		var r string
 		var sr responseSlack
